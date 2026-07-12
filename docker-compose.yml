@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: quotetool-postgres
+    environment:
+      POSTGRES_USER: quotetool
+      POSTGRES_PASSWORD: quotetool_dev
+      POSTGRES_DB: quotetool
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quotetool"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  customers:
+    build:
+      context: ./services/customers
+    container_name: quotetool-customers
+    ports:
+      - "8081:8080"
+    environment:
+      DATABASE_URL: postgres://quotetool:quotetool_dev@postgres:5432/quotetool?sslmode=disable
+      SERVICE_PORT: "8080"
+      LOG_LEVEL: debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  quotes:
+    build:
+      context: ./services/quotes
+    container_name: quotetool-quotes
+    ports:
+      - "8082:8080"
+    environment:
+      DATABASE_URL: postgres://quotetool:quotetool_dev@postgres:5432/quotetool?sslmode=disable
+      SERVICE_PORT: "8080"
+      LOG_LEVEL: debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  orders:
+    build:
+      context: ./services/orders
+    container_name: quotetool-orders
+    ports:
+      - "8083:8080"
+    environment:
+      DATABASE_URL: postgres://quotetool:quotetool_dev@postgres:5432/quotetool?sslmode=disable
+      SERVICE_PORT: "8080"
+      QUOTES_SERVICE_URL: http://quotes:8080
+      LOG_LEVEL: debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  invoices:
+    build:
+      context: ./services/invoices
+    container_name: quotetool-invoices
+    ports:
+      - "8084:8080"
+    environment:
+      DATABASE_URL: postgres://quotetool:quotetool_dev@postgres:5432/quotetool?sslmode=disable
+      SERVICE_PORT: "8080"
+      ORDERS_SERVICE_URL: http://orders:8080
+      LOG_LEVEL: debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  reports:
+    build:
+      context: ./services/reports
+    container_name: quotetool-reports
+    ports:
+      - "8085:8080"
+    environment:
+      DATABASE_URL: postgres://quotetool:quotetool_dev@postgres:5432/quotetool?sslmode=disable
+      SERVICE_PORT: "8080"
+      LOG_LEVEL: debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

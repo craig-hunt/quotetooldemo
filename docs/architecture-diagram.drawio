@@ -1,0 +1,133 @@
+<mxfile host="app.diagrams.net" agent="claude-code">
+  <diagram id="quotetooldemo-arch" name="System Architecture">
+    <mxGraphModel dx="1156" dy="863" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" value="Quote-to-Cash Demo — System Architecture" vertex="1">
+          <mxGeometry height="40" width="720" x="440" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="client-swimlane" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;verticalAlign=top;fontSize=14" value="Client Tier" vertex="1">
+          <mxGeometry height="130" width="1440" x="80" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="browser" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;labelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeColor=#000000;fillColor=#dae8fc" value="Browser&lt;br&gt;(Ops User)" vertex="1">
+          <mxGeometry height="70" width="40" x="140" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="spa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12" value="React SPA&#xa;(Vite + TypeScript + Tailwind)&#xa;Cloudflare Pages" vertex="1">
+          <mxGeometry height="70" width="240" x="280" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;dashed=1" value="Cloudflare Worker&#xa;(optional API gateway)" vertex="1">
+          <mxGeometry height="70" width="220" x="600" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="client-edge-1" edge="1" parent="1" source="browser" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1" target="spa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="client-edge-2" edge="1" parent="1" source="spa" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1" target="gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="service-swimlane" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;fontSize=14" value="Service Tier — Go 1.22 microservices on Fly.io" vertex="1">
+          <mxGeometry height="330" width="1440" x="80" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-customers" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;verticalAlign=top;spacingTop=8" value="&lt;b&gt;customers&lt;/b&gt;&#xa;:8080&#xa;&#xa;/customers CRUD&#xa;/health&#xa;&#xa;Store interface + PGStore" vertex="1">
+          <mxGeometry height="180" width="220" x="120" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-quotes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;verticalAlign=top;spacingTop=8" value="&lt;b&gt;quotes&lt;/b&gt;&#xa;:8080&#xa;&#xa;/quotes CRUD + state machine&#xa;paving-math calc (tons, subtotal, tax, markup)&#xa;/health&#xa;&#xa;draft → sent → accepted / rejected / expired" vertex="1">
+          <mxGeometry height="180" width="220" x="380" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-orders" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;verticalAlign=top;spacingTop=8" value="&lt;b&gt;orders&lt;/b&gt;&#xa;:8080&#xa;&#xa;/orders CRUD + state machine&#xa;calls quotes on create&#xa;/health&#xa;&#xa;open → in_progress → fulfilled / cancelled" vertex="1">
+          <mxGeometry height="180" width="220" x="640" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-invoices" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;verticalAlign=top;spacingTop=8" value="&lt;b&gt;invoices&lt;/b&gt;&#xa;:8080&#xa;&#xa;/invoices CRUD + state machine&#xa;calls orders on create&#xa;/health&#xa;&#xa;draft → sent → paid / overdue / cancelled" vertex="1">
+          <mxGeometry height="180" width="220" x="900" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-reports" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;verticalAlign=top;spacingTop=8" value="&lt;b&gt;reports&lt;/b&gt;&#xa;:8080&#xa;&#xa;quote-to-cash funnel&#xa;cycle-time&#xa;invoice aging&#xa;mix breakdown&#xa;/health" vertex="1">
+          <mxGeometry height="180" width="220" x="1160" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-orders-quotes" edge="1" parent="1" source="svc-orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#B85450;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5" target="svc-quotes" value="GET /quotes/{id}&#xa;(reject if != accepted)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-invoices-orders" edge="1" parent="1" source="svc-invoices" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#B85450;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5" target="svc-orders" value="GET /orders/{id}&#xa;(reject if != fulfilled)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-client-customers" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;dashed=1" target="svc-customers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-client-quotes" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;dashed=1" target="svc-quotes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-client-orders" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;dashed=1" target="svc-orders">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-client-invoices" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;dashed=1" target="svc-invoices">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-client-reports" edge="1" parent="1" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;dashed=1" target="svc-reports">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="data-swimlane" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;verticalAlign=top;fontSize=14" value="Data Tier — PostgreSQL 15 (Fly Postgres, managed volume)" vertex="1">
+          <mxGeometry height="240" width="1440" x="80" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="pg-instance" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#d6b656" value="" vertex="1">
+          <mxGeometry height="170" width="200" x="700" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="schema-customers" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="customers&#xa;— customers" vertex="1">
+          <mxGeometry height="60" width="160" x="120" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="schema-quotes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="quotes&#xa;— quotes, quote_line_items" vertex="1">
+          <mxGeometry height="60" width="160" x="120" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="schema-orders" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="orders&#xa;— orders, order_number_seq" vertex="1">
+          <mxGeometry height="60" width="160" x="1320" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="schema-invoices" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11" value="invoices&#xa;— invoices, invoice_number_seq" vertex="1">
+          <mxGeometry height="60" width="160" x="1320" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-customers-db" edge="1" parent="1" source="svc-customers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366" target="schema-customers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-quotes-db" edge="1" parent="1" source="svc-quotes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366" target="schema-quotes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-orders-db" edge="1" parent="1" source="svc-orders" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366" target="schema-orders">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-invoices-db" edge="1" parent="1" source="svc-invoices" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366" target="schema-invoices">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-reports-customers" edge="1" parent="1" source="svc-reports" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;dashed=1" target="schema-customers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-reports-quotes" edge="1" parent="1" source="svc-reports" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;dashed=1" target="schema-quotes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-reports-orders" edge="1" parent="1" source="svc-reports" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;dashed=1" target="schema-orders">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-reports-invoices" edge="1" parent="1" source="svc-reports" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;dashed=1" target="schema-invoices">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;verticalAlign=top;fontSize=12" value="Legend" vertex="1">
+          <mxGeometry height="100" width="1440" x="80" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11" value="─── (solid green) service → own DB schema (writes)" vertex="1">
+          <mxGeometry height="20" width="400" x="100" y="905" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#B85450" value="─── (solid red) cross-service HTTP call with status guard" vertex="1">
+          <mxGeometry height="20" width="400" x="100" y="925" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#6c8ebf" value="- - - (dashed blue) browser / gateway → service HTTP call" vertex="1">
+          <mxGeometry height="20" width="400" x="100" y="945" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#9673a6" value="- - - (dashed purple) reports read-only cross-schema SQL" vertex="1">
+          <mxGeometry height="20" width="400" x="520" y="905" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11" value="Every service: constants.go + Store interface + PGStore + slog JSON to stdout + graceful shutdown on SIGTERM" vertex="1">
+          <mxGeometry height="20" width="920" x="520" y="925" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11" value="Every service: 12-Factor compliant (see docs/12-FACTOR-AUDIT.md). Test efficacy 95–100% via gremlins mutation testing (see docs/adr/0006)." vertex="1">
+          <mxGeometry height="20" width="920" x="520" y="945" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
