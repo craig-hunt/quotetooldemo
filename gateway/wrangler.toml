@@ -1,0 +1,16 @@
+name = "quotedemo-gateway"
+main = "worker.js"
+compatibility_date = "2026-07-12"
+
+# Enable the workers.dev URL for smoke testing before the custom domain lands.
+workers_dev = true
+
+# Route the /api/* path on the custom domain to this Worker.
+# Cloudflare matches this route once the DNS + custom-domain step lands
+# on the Pages project in step 5.
+routes = [
+  { pattern = "quotedemo.sagecrestsolutions.com/api/*", zone_name = "sagecrestsolutions.com" }
+]
+
+[observability]
+enabled = true
