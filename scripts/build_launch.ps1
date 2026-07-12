@@ -1,7 +1,16 @@
 # build_launch.ps1
 # Tears down any running containers + volumes, prunes docker cache, rebuilds
-# all images without cache, brings the full stack up, waits for health checks.
+# all images without cache, brings the full stack up, waits for health checks,
+# and seeds demo data via ./scripts/seed.ps1.
 # Run from the repo root.
+#
+# Flags:
+#   -NoSeed   skip the seed step (leaves the stack empty for a manual walk-through)
+
+[CmdletBinding()]
+param(
+    [switch]$NoSeed
+)
 
 $ErrorActionPreference = 'Stop'
 
@@ -69,12 +78,32 @@ if ($Failed.Count -gt 0) {
 Write-Host ""
 Write-Host "==> stack up and healthy" -ForegroundColor Green
 Write-Host ""
+
+if ($NoSeed) {
+    Write-Host "==> skipping seed (-NoSeed flag set)" -ForegroundColor Yellow
+} else {
+    Write-Host "==> seeding demo data" -ForegroundColor Cyan
+    $SeedScript = Join-Path $PSScriptRoot 'seed.ps1'
+    if (-not (Test-Path $SeedScript)) {
+        Write-Host "==> seed.ps1 not found at $SeedScript" -ForegroundColor Red
+        exit 1
+    }
+    try {
+        & $SeedScript
+    } catch {
+        Write-Host "==> seed failed: $_" -ForegroundColor Red
+        Write-Host "    stack is still up. inspect via: docker compose logs" -ForegroundColor Yellow
+        exit 1
+    }
+}
+
+Write-Host ""
 Write-Host "    customers: http://localhost:8081"
 Write-Host "    quotes:    http://localhost:8082"
 Write-Host "    orders:    http://localhost:8083"
 Write-Host "    invoices:  http://localhost:8084"
 Write-Host "    reports:   http://localhost:8085"
 Write-Host ""
-Write-Host "    seed demo data: ./scripts/seed.ps1"
+Write-Host "    re-seed only:   ./scripts/seed.ps1"
 Write-Host "    tear down:      docker compose down -v"
 Write-Host ""

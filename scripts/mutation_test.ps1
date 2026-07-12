@@ -9,15 +9,21 @@
 # Target: 70% kill ratio per service (industry standard).
 # Exit code non-zero if any service falls under the threshold.
 #
+# Uses the integration build tag by default so gremlins picks up both unit +
+# integration tests. Pass -NoIntegration to run against unit tests only
+# (skips Postgres-container spin-up per mutation, much faster).
+#
 # Usage:
 #   .\scripts\mutation_test.ps1
 #   .\scripts\mutation_test.ps1 -Threshold 0.70
-#   .\scripts\mutation_test.ps1 -Service quotes    # single service
+#   .\scripts\mutation_test.ps1 -Service quotes         # single service
+#   .\scripts\mutation_test.ps1 -NoIntegration           # skip integration tests
 
 [CmdletBinding()]
 param(
     [double]$Threshold = 0.70,
-    [string]$Service = ''
+    [string]$Service = '',
+    [switch]$NoIntegration
 )
 
 $ErrorActionPreference = 'Stop'
@@ -50,7 +56,9 @@ foreach ($svc in $services) {
     try {
         # gremlins prints a summary like "Killed X, Lived Y, Not viable Z" and a
         # final "efficacy: NN%". We capture stdout, then parse the ratio.
-        $out = & gremlins unleash --output json 2>&1
+        $gremlinsArgs = @('unleash', '--output', 'json')
+        if (-not $NoIntegration) { $gremlinsArgs += @('--tags', 'integration') }
+        $out = & gremlins @gremlinsArgs 2>&1
         $exit = $LASTEXITCODE
 
         # Try JSON first; fall back to text scrape if the JSON schema shifts.

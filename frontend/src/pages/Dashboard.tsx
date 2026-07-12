@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 export default function Dashboard() {
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white mb-2">quotetooldemo</h1>
+      <h1 className="text-3xl font-bold text-white mb-2">Quote Tool Demo</h1>
       <p className="text-slate-400 mb-8">
         Paving-industry quote-to-cash workflow demo.
       </p>

@@ -92,11 +92,11 @@ func (r *Reports) CycleTimes(ctx context.Context) (CycleTimes, error) {
 				WHERE q.accepted_at IS NOT NULL
 			), 0) AS quote_accepted_to_order,
 			COALESCE((
-				SELECT AVG(EXTRACT(EPOCH FROM (fulfilled_date - created_at))/86400)
+				SELECT AVG(EXTRACT(EPOCH FROM (fulfilled_date::timestamptz - created_at))/86400)
 				FROM %s WHERE fulfilled_date IS NOT NULL
 			), 0) AS order_created_to_fulfilled,
 			COALESCE((
-				SELECT AVG(EXTRACT(EPOCH FROM (inv.paid_date - o.fulfilled_date))/86400)
+				SELECT AVG(EXTRACT(EPOCH FROM (inv.paid_date::timestamptz - o.fulfilled_date::timestamptz))/86400)
 				FROM %s inv JOIN %s o ON o.id = inv.order_id
 				WHERE inv.paid_date IS NOT NULL AND o.fulfilled_date IS NOT NULL
 			), 0) AS order_fulfilled_to_paid
