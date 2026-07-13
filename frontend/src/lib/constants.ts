@@ -1,3 +1,5 @@
+export const APP_TITLE = 'Quote Tool Demo'
+
 export const QUOTE_STATUS = {
   DRAFT: 'draft',
   SENT: 'sent',

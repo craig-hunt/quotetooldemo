@@ -1,4 +1,5 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
+import { APP_TITLE } from './lib/constants'
 import Dashboard from './pages/Dashboard'
 import Customers from './pages/Customers'
 import Quotes from './pages/Quotes'
@@ -21,7 +22,7 @@ export default function App() {
         </Routes>
       </main>
       <footer className="border-t border-slate-800 py-4 text-center text-sm text-slate-500">
-        quotetooldemo · Go microservices + React SPA
+        {APP_TITLE} · Go microservices + React SPA
       </footer>
     </div>
   )
@@ -34,7 +35,7 @@ function Header() {
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
       <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <NavLink to="/" className="text-lg font-bold text-white tracking-tight">
-          quotetooldemo
+          {APP_TITLE}
         </NavLink>
         <div className="flex items-center gap-2">
           <NavLink to="/customers" className={({ isActive }) => `${link} ${isActive ? active : ''}`}>
